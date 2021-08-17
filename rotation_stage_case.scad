@@ -1,3 +1,7 @@
+// Noami Yescas
+// 08-17-2021
+// Box or holder for arduino, relay and rotation stage switches
+
 $fn= 70;
 
 
