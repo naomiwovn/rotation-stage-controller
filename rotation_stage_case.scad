@@ -4,16 +4,19 @@
 
 $fn= 70;
 
-
 //Arduino dimensions
 arduinox = 68.6;
 arduinoy = 53.3;
 arduinoz = 3;
 
+usbx = 14;
+usby = 11.6;
+usbz = 9;
+
 // Box dimensions
 boxThickness = 2;
-boxx = arduinox + boxThickness*2 +20;
-boxy = arduinoy + boxThickness*2 +20;
+boxx = arduinox + boxThickness*2 +10;
+boxy = arduinoy + boxThickness*2 +10;
 boxz = 15;
 
 // Hole positions
@@ -26,6 +29,9 @@ h4y = h1y + 5.1;
 h4x = h3x;
 h3y = h4y + 27.9;
 h2y = h3y + 15.2;
+
+
+
 
 module Hole(holediam){
     cylinder(d = holediam,h=arduinoz+.1);
@@ -56,14 +62,17 @@ module FourHoles(){
 }
 
 module Arduino(){
-    difference(){
-        cube([arduinox, arduinoy, arduinoz]);
-        FourHoles();
-    }
+
+        difference(){
+            cube([arduinox, arduinoy, arduinoz]);
+            FourHoles();
+        }
+            cube([usbx,usby,usbz]);
+    
 }
 
 module OutsideBox(){
-    cube([boxx,boxy,boxz]);    
+    translate([boxx/2,boxy/2,boxz/2])cylinder(d=boxx,h=boxz);     
 }
 
 module InsideBox(){
@@ -72,8 +81,20 @@ module InsideBox(){
 }
 
 
-difference(){    
-    OutsideBox();        
-    InsideBox();
+
+rotate([90,0,0]){
+    // Cut a hole in the outerbox 
+    difference(){    
+        OutsideBox();        
+        InsideBox();
+        translate([boxx/2-arduinox/2,boxy/2-arduinoy/2,-0.1])
+            FourHoles();
+    }
+    // Put the arduino model inside
+    translate([boxx/2-arduinox/2,boxy/2-arduinoy/2,boxThickness])
+            Arduino();
 }
-translate([boxx/2-arduinox/2,boxy/2-arduinoy/2,boxThickness]) Arduino();
+
+
+
+
