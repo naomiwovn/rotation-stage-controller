@@ -16,7 +16,7 @@ rboxrad = 1.5;
 // Switch Hole Size and Spacing
 switchHoleDiam = 12;
 switchSpacing = 28;
-holeMoatLen = 7;
+holeMoatLen = 4;
 
 // Lid inner rim 
 rimz = 2;
