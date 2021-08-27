@@ -8,21 +8,22 @@ arduinox = 68.6;
 arduinoy = 53.3;
 arduinoz = 3;
 
-rboxx = arduinox + 60;
-rboxy = arduinoy + 80;
+rboxx = arduinox + 30;
+rboxy = arduinoy + 40;
 rboxz = 3;
 rboxrad = 1.5; 
 
 // Switch Hole Size and Spacing
 switchHoleDiam = 12;
-switchSpacing = 30;
+switchSpacing = 28;
+holeMoatLen = 7;
 
 // Lid inner rim 
 rimz = 2;
 rimDist = 3;
 rimThickness = 4;
 rimx = rboxx-rimDist;
-rimy = rboxx-rimDist;
+rimy = rboxy-rimDist;
 innerRimx = rimx-rimThickness;
 innerRimy = rimy-rimThickness;
 
@@ -33,10 +34,14 @@ scaleVal = 1;
 
 
 // Honeycomb 
-r = 6; // radius/thickness
+r = 6.5; // radius/thickness
 n = 6; // number holes
 combDiam = 6;
 combHeight = 5;
+
+// Change the scale of the web of combs 
+combxScale = 1.05;
+combyScale = 0.95;
 
 
 // Rounded Lid part
@@ -73,7 +78,6 @@ module Holes(){
             cylinder(d=switchHoleDiam,h=rboxz+10);
 }
 
-holeMoatLen = 9;
 module NonHoles(){
         translate([rboxx/2.5,rboxy/3+switchSpacing/2,-0.1])
             cylinder(d=switchHoleDiam+holeMoatLen,h=rboxz+0.6);
@@ -96,7 +100,7 @@ module Rim(){
     difference(){
         translate([rboxx/2-rimx/2,rboxy/2-rimy/2,0])
             cube([rimx,rimy,rimz]);
-        translate([rboxx/2-innerRimx/2,rboxy/2-innerRimy/2,-rimz-0.1])
+        translate([rboxx/2-innerRimx/2,rboxy/2-innerRimy/2,-rimz+0.1])
             cube([rimx-rimThickness,rimy-rimThickness,2*rimz]);
         Holes();
         //translate([rboxx/1.27,rboxy/2,rboxz-combHeight/2])rotate([0,0,90-22])ManyCombs();
@@ -198,7 +202,7 @@ module CombOfCombs(){
     step = 360/n;
     rotate([0,0,0])HoneyComb();
     
-    r4 = 34-r/2;
+    r4 = 35-r/2;
     for (i=[0:step:359]) {
         angle = i+30;
         dx = r4*cos(angle);
@@ -233,9 +237,6 @@ module CombSquare(){
 }
 
 
-combxScale = 1.4;
-combyScale = 1.3;
-
 difference(){
     // Lid Base
     translate([0,0,rimz])
@@ -251,14 +252,10 @@ difference(){
 }
 difference(){
     Rim();
-    // Honeycomb Pattern
-    translate([rboxx/2,rboxy/2,rboxz-rboxz])
-        scale([combxScale,combyScale,1])CombSquare();
+
 }
 
 difference(){
     NonHoles();
     Holes();
 }
-
-
