@@ -8,7 +8,10 @@ ringOD = 16.5;
 labelCubex = 9;
 labelCubey = 7;
 
-thickness = 2;
+thickness = 1.5;
+
+nubDepth = 0.79;
+nubWidth = 1.5;
 
 difference(){
     // combine outer cylinder with side cubes
@@ -27,7 +30,7 @@ difference(){
         linear_extrude(3)
             scale([2,1,1])text(size=9,"-",halign="center");
     // + label
-    translate([0,+ringOD/2-1,0])
+    translate([0,+ringOD/2-1.4,0])
         linear_extrude(3)
             scale([1,1,1])text(size=9,"+",halign="center");
     
@@ -36,3 +39,4 @@ difference(){
         cylinder(d = ringID, h = thickness+10);
 } 
 
+translate([0,-ringID/2+nubDepth/2-0.05,thickness/2])cube([nubWidth,nubDepth,thickness],center=true);
