@@ -2,6 +2,8 @@
 // 08-30-21
 // Rings go over switches to act as removable labels
 
+$fn = 55;
+
 ringID = 12.8;
 ringOD = 16.5;
 
@@ -32,11 +34,12 @@ difference(){
     // + label
     translate([0,+ringOD/2-1.4,0])
         linear_extrude(3)
-            scale([1,1,1])text(size=9,"+",halign="center");
+            scale([1,1,1])text(size=8,"+",halign="center");
     
     // inner cylinder
     translate([0,0,-2])
         cylinder(d = ringID, h = thickness+10);
 } 
 
+// keyslot nub 
 translate([0,-ringID/2+nubDepth/2-0.05,thickness/2])cube([nubWidth,nubDepth,thickness],center=true);
