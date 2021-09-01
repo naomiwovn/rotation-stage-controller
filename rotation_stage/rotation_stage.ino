@@ -3,34 +3,34 @@
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
 
-
-// Teensy 2.0 has the LED on pin 11
-// Teensy++ 2.0 has the LED on pin 6
-// Teensy 3.x / Teensy LC have the LED on pin 13
 const int ledPin = 13;    // pin 29 on the B3 LO controller and the V1.5 B1B2 controller
 const int relayA = 12;    // relay on + side of motor
 const int relayB = 11;    // relay on - side of motor
+
 const int encA = 2;       // encoder A input
 const int encB = 3;       // encoder B input
-const int manFwd = 4;     // pull low to manually movwe forward
-const int manBack = 5 ;   // pull low to manually move backwards
-const int goFwd = 6 ;     // go 90 degrees forward
-const int goBack = 7 ;    // go 90 degrees back
+
+const int dirPin = 7;       // direction pin
+const int jogGoPin = 4;     // pull low to manually move forward
+const int go90Pin = 6 ;     // go 90 degrees forward
+
 long encPos = 0 ;
 long desired = 0 ;
 long degree90 = 250000 ;    // number of steps in 90 degrees of rotation
-byte mode = 0 ;               // 0 = stopped and we don't know where
-                          // 1 = moving forward 90 degrees
-                          // 2 = stopped at 90 degrees fwd
-                          // 3 = moving backward 90 degrees
-                          // 4 = stopped at 90 degrees back
-                          // 5 = moving forward manually
-                          // 6 = moving backward manually
+byte mode = 0 ;               
+
+// Mode 
+// 0 = stopped and we don't know where
+// 1 = moving forward 90 degrees
+// 2 = stopped at 90 degrees fwd
+// 3 = moving backward 90 degrees
+// 4 = stopped at 90 degrees back
+// 5 = moving forward manually
+// 6 = moving backward manually
 
 Encoder preSelect(encA, encB) ;
 
-// the setup() method runs once, when the sketch starts
-
+// Runs Once at Start
 void setup() {
   // initialize the digital pin as an output.
   pinMode(ledPin, OUTPUT);
@@ -38,25 +38,27 @@ void setup() {
   digitalWrite(relayA, HIGH) ;
   pinMode(relayB, OUTPUT) ;
   digitalWrite(relayB, HIGH) ;
+  
   pinMode(encA, INPUT) ;
   pinMode(encB, INPUT) ;
-  pinMode(manFwd, INPUT_PULLUP) ;
-  pinMode(manBack, INPUT_PULLUP) ;
-  pinMode(goFwd, INPUT_PULLUP) ;
-  pinMode(goBack, INPUT_PULLUP) ;
+  
+  pinMode(dirPin, INPUT_PULLUP);
+  pinMode(jogGoPin, INPUT_PULLUP) ;
+  pinMode(go90Pin, INPUT_PULLUP) ;
+  
   preSelect.write(0);
   Serial.begin(9600);
 }
 
-// the loop() methor runs over and over again,
-// as long as the board has power
 
+// Runs Continuously
 void loop() {
+  // Encoder
   long curPos ;
-  static int counter ;
-// read the encoder
+  static int counter;
   curPos = preSelect.read() ;
-#ifdef DEBUG
+  // read the encoder
+  #ifdef DEBUG
   if (curPos != encPos) {
     if (++counter % 1000 == 0) {
       Serial.println(curPos) ;
@@ -64,34 +66,39 @@ void loop() {
     }
     encPos = curPos ;
   }
-#else
+  #else
   encPos = curPos ;
-#endif
+  #endif
 
-  // check if we need to manually go forward or backward
-  if (!digitalRead(manFwd)) {
+  bool dirPos = digitalRead(dirPin);  // Default positive direction
+  bool jogGo = digitalRead(jogGoPin);
+  bool go90 = digitalRead(go90Pin);
+  
+  // Check Jog Forwards (+) // 
+  if (!jogGo && dirPos) {
     mode = 5 ;
     desired = encPos + 1 ;
   }
-  else if (!digitalRead(manBack)) {
+  // Check Jog Backwards (-) //
+  else if (!jogGo && !dirPos) {
     mode = 6 ;
     desired = encPos - 1 ;
   }
-  else
-  // see if we are being comanded to go 90 degrees forward
-  //  only valid if we are 90 degrees back or mode 0
-  if ((!digitalRead(goFwd)) && ((mode == 0) || (mode == 4))) {
+  // Check go 90 Forwards (+) //
+  // only valid if we are 90 degrees back or mode 0
+  else if ((!go90 && dirPos) && ((mode == 0) || (mode == 4))) {
     mode = 1 ;
     desired = encPos + degree90 ;
   }
-  else
-  // see if we are being comanded to go 90 degrees backward
+  // Check go 90 Backwards (-) //
   //  only valid if we are 90 degrees forward or mode 0
-  if ((!digitalRead(goBack)) && ((mode == 0) || (mode == 2))) {
+  else if ((!go90 && !dirPos) && ((mode == 0) || (mode == 2))) {
     mode = 3 ;
     desired = encPos - degree90 ;
   }
+
   
+  // Execute Movement //
   if ((mode == 1) || (mode == 5)) {   // are we moving forward?
     if (encPos < desired) {           // have we gone far enough?
       digitalWrite(relayA, LOW) ;     // no, keep going
