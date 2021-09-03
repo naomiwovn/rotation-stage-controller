@@ -1,3 +1,5 @@
+Uses Encoder arduino library
+
 Arduino nano every has issues with interrupt pins 2 and 3 with encoder library
 
 Added to top of /Users/\<User\>/Documents/Arduino/libraries/Encoder/Encoder.cpp the following: 
