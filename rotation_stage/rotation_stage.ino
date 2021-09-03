@@ -1,6 +1,6 @@
-/* Run the SHIELDS rotation stage
+/* Run the SHIELDS rotation stage with Arduino EVERY
 */
-#define ENCODER_OPTIMIZE_INTERRUPTS
+#define ENCODER_DO_NOT_USE_INTERRUPTS
 #include <Encoder.h>
 
 const int ledPin = 13;    // pin 29 on the B3 LO controller and the V1.5 B1B2 controller
@@ -17,6 +17,7 @@ const int go90Pin = 6 ;     // go 90 degrees forward
 long encPos = 0 ;
 long desired = 0 ;
 long degree90 = 250000 ;    // number of steps in 90 degrees of rotation
+//long degree90 = 9000;
 byte mode = 0 ;               
 
 // Mode 
@@ -60,7 +61,7 @@ void loop() {
   // read the encoder
   #ifdef DEBUG
   if (curPos != encPos) {
-    if (++counter % 1000 == 0) {
+    if (++counter % 100 == 0) {
       Serial.println(curPos) ;
       counter = 0 ;
     }
@@ -69,32 +70,40 @@ void loop() {
   #else
   encPos = curPos ;
   #endif
-
-  bool dirPos = digitalRead(dirPin);  // Default positive direction
-  bool jogGo = digitalRead(jogGoPin);
-  bool go90 = digitalRead(go90Pin);
   
   // Check Jog Forwards (+) // 
-  if (!jogGo && dirPos) {
+  if (!digitalRead(jogGoPin) && digitalRead(dirPin)) {
     mode = 5 ;
     desired = encPos + 1 ;
+    Serial.println("+++JOG+++");
+    Serial.print("Desired: ");
+    Serial.println(desired);
+    Serial.print("encPos: ");
+    Serial.println(encPos);
   }
   // Check Jog Backwards (-) //
-  else if (!jogGo && !dirPos) {
+  else if (!digitalRead(jogGoPin) && !digitalRead(dirPin)) {
     mode = 6 ;
     desired = encPos - 1 ;
+    Serial.println("---JOG---");
+    Serial.print("Desired: ");
+    Serial.println(desired);
+    Serial.print("encPos: ");
+    Serial.println(encPos);
   }
   // Check go 90 Forwards (+) //
   // only valid if we are 90 degrees back or mode 0
-  else if ((!go90 && dirPos) && ((mode == 0) || (mode == 4))) {
+  else if ((!digitalRead(go90Pin) && digitalRead(dirPin)) && ((mode == 0) || (mode == 4))) {
     mode = 1 ;
     desired = encPos + degree90 ;
+    Serial.println("+++90+++");
   }
   // Check go 90 Backwards (-) //
   //  only valid if we are 90 degrees forward or mode 0
-  else if ((!go90 && !dirPos) && ((mode == 0) || (mode == 2))) {
+  else if ((!digitalRead(go90Pin) && !digitalRead(dirPin)) && ((mode == 0) || (mode == 2))) {
     mode = 3 ;
     desired = encPos - degree90 ;
+    Serial.println("---90---");
   }
 
   
