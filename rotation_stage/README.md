@@ -1,4 +1,4 @@
-Uses Encoder arduino library
+Uses Encoder arduino library to move rotation stage a fixed amount or jog.
 
 Arduino nano every has issues with interrupt pins 2 and 3 with encoder library
 
