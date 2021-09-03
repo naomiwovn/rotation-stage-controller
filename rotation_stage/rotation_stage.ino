@@ -17,7 +17,7 @@ const int go90Pin = 6 ;     // go 90 degrees forward
 long encPos = 0 ;
 long desired = 0 ;
 long degree90 = 250000 ;    // number of steps in 90 degrees of rotation
-// long degree90 = 9000;    // shorter rotation for testing
+//long degree90 = 9000;
 byte mode = 0 ;               
 
 // Mode 
