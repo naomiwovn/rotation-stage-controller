@@ -1,6 +1,6 @@
 /* Run the SHIELDS rotation stage with Arduino EVERY
 */
-#define ENCODER_OPTIMIZE_INTERRUPTS
+#define ENCODER_DO_NOT_USE_INTERRUPTS
 #include <Encoder.h>
 
 const int ledPin = 13;    // pin 29 on the B3 LO controller and the V1.5 B1B2 controller
