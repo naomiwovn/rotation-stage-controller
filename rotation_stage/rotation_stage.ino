@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 /* Run the SHIELDS rotation stage with Arduino EVERY
 */
 #define ENCODER_OPTIMIZE_INTERRUPTS
@@ -11,8 +13,8 @@ const int encA = 2;       // encoder A input
 const int encB = 3;       // encoder B input
 
 const int dirPin = 7;       // direction pin
-const int jogGoPin = 4;     // pull low to manually move forward
-const int go90Pin = 6 ;     // go 90 degrees forward
+const int jogGoPin = 6;     // pull low to manually move forward
+const int go90Pin = 4;     // go 90 degrees forward
 
 long encPos = 0 ;
 long desired = 0 ;
@@ -72,25 +74,25 @@ void loop() {
   encPos = curPos ;
 
   // Check Jog Forwards (+) // 
-  if (!digitalRead(jogGoPin) && digitalRead(dirPin)) {
+  if (!digitalRead(jogGoPin) && !digitalRead(dirPin)) {
     mode = 5 ;
     desired = encPos + 1 ;
   }
   // Check Jog Backwards (-) //
-  else if (!digitalRead(jogGoPin) && !digitalRead(dirPin)) {
+  else if (!digitalRead(jogGoPin) && digitalRead(dirPin)) {
     mode = 6 ;
     desired = encPos - 1 ;
   }
   // Check go 90 Forwards (+) //
   // only valid if we are 90 degrees back or mode 0
-  else if ((!digitalRead(go90Pin) && digitalRead(dirPin)) && ((mode == 0) || (mode == 4))) {
+  else if ((!digitalRead(go90Pin) && !digitalRead(dirPin)) && ((mode == 0) || (mode == 4))) {
     mode = 1 ;
     desired = encPos + degree90 ;
     Serial.println("+++90+++");
   }
   // Check go 90 Backwards (-) //
   //  only valid if we are 90 degrees forward or mode 0
-  else if ((!digitalRead(go90Pin) && !digitalRead(dirPin)) && ((mode == 0) || (mode == 2))) {
+  else if ((!digitalRead(go90Pin) && digitalRead(dirPin)) && ((mode == 0) || (mode == 2))) {
     mode = 3 ;
     desired = encPos - degree90 ;
     Serial.println("---90---");
